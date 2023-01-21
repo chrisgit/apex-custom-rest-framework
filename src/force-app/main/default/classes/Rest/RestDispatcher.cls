@@ -62,7 +62,6 @@ public inherited sharing class RestDispatcher {
     }
 
     private Boolean pathElementIsVariable(string pathElement) {
-        System.Debug(pathElement);
         return pathElement.startsWith('{') && pathElement.endsWith('}');
     }
 

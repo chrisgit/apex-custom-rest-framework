@@ -34,8 +34,6 @@ public with sharing class AccountRestDtoMapper {
     }
 
     private static AccountRestDto accountToDto(Account acc) {
-        System.Debug(acc);
-
         AccountRestDto accountDto = new AccountRestDto();
         accountDto.id = acc.id;
         accountDto.accountNumber = acc.AccountNumber;
@@ -47,7 +45,6 @@ public with sharing class AccountRestDtoMapper {
     }
 
     private static List<ContactRestDto> contactsToDto(Account acc) {
-        System.Debug(acc.Contacts);
         List<ContactRestDto> contactsDto = new List<ContactRestDto>();
         if (acc.Contacts != null) {
             for (Contact cnt : acc.Contacts) {
