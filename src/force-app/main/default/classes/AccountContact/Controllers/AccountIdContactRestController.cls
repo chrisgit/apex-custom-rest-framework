@@ -8,7 +8,7 @@ public with sharing class AccountIdContactRestController extends BaseController 
         string accountId = Request.pathParameters.get('id');
 
         try {
-            return Response.Ok(AccountRestDtoMapper.toDto(AccountContactQueries.getAccountByIdWithContacts(accountId)));
+            return Response.Ok(AccountContactQueries.getAccountByIdWithContacts(accountId));
         } Catch (AccountNotFoundException exc) {
             return Response.NotFound();
         }
@@ -23,7 +23,7 @@ public with sharing class AccountIdContactRestController extends BaseController 
         AccountContactService.updateAccount(dto, accountId);
 
         // Re-read updated data and respond
-        return Response.Ok(AccountRestDtoMapper.toDto(AccountContactQueries.getAccountByIdWithContacts(accountId)));
+        return Response.Ok(AccountContactQueries.getAccountByIdWithContacts(accountId));
     }
 
     protected override RestResponseWrapper handleDelete() {

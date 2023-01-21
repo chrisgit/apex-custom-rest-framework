@@ -5,7 +5,7 @@ public with sharing class AccountContactRestController extends BaseController {
     }
 
     protected override RestResponseWrapper handleGet() {
-        return Response.Ok(AccountRestDtoMapper.toDto(AccountContactQueries.getAllAccountsWithContacts()));
+        return Response.Ok(AccountContactQueries.getAllAccountsWithContacts());
     }
 
     protected override RestResponseWrapper handlePost() {
@@ -15,6 +15,6 @@ public with sharing class AccountContactRestController extends BaseController {
         AccountRestDto dto = (AccountRestDto)Request.deserialiseBody(AccountRestDto.class);
         Id accountId = AccountContactService.createAccountAndContacts(dto);
 
-        return Response.Ok(AccountRestDtoMapper.toDto(AccountContactQueries.getAccountByIdWithContacts(accountId)));
+        return Response.Ok(AccountContactQueries.getAccountByIdWithContacts(accountId));
     }
 }
