@@ -1,12 +1,8 @@
 // Controller for /account/{id} endpoint
 public with sharing class AccountIdContactRestController extends BaseController {
-    public AccountIdContactRestController(string uri) {
-        super(uri);
-    }
+    public string accountId;
 
     protected override RestResponseWrapper handleGet() {
-        string accountId = Request.pathParameters.get('id');
-
         try {
             return Response.Ok(AccountContactQueries.getAccountByIdWithContacts(accountId));
         } Catch (AccountNotFoundException exc) {
@@ -18,17 +14,14 @@ public with sharing class AccountIdContactRestController extends BaseController 
         if (Request.hasBody() == false) {
             return Response.BadRequest();
         }
-        string accountId = Request.pathParameters.get('id');
         AccountRestDto dto = (AccountRestDto)Request.deserialiseBody(AccountRestDto.class);
-        AccountContactService.updateAccount(dto, accountId);
+        AccountUpdateCommand.execute(dto, accountId);
 
-        // Re-read updated data and respond
         return Response.Ok(AccountContactQueries.getAccountByIdWithContacts(accountId));
     }
 
     protected override RestResponseWrapper handleDelete() {
-        string accountId = Request.pathParameters.get('id');
-        AccountContactService.deleteAccountAndContacts(accountId);
+        AccountContactDeleteCommand.execute(accountId);
 
         return Response.NoContent();
     }

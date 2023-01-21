@@ -1,9 +1,5 @@
 // Controller for /accounts endpount
 public with sharing class AccountContactRestController extends BaseController {
-    public AccountContactRestController(string uri) {
-        super(uri);
-    }
-
     protected override RestResponseWrapper handleGet() {
         return Response.Ok(AccountContactQueries.getAllAccountsWithContacts());
     }
@@ -13,7 +9,7 @@ public with sharing class AccountContactRestController extends BaseController {
             return Response.BadRequest();
         }
         AccountRestDto dto = (AccountRestDto)Request.deserialiseBody(AccountRestDto.class);
-        Id accountId = AccountContactService.createAccountAndContacts(dto);
+        Id accountId = AccountContactCreateCommand.execute(dto);
 
         return Response.Ok(AccountContactQueries.getAccountByIdWithContacts(accountId));
     }

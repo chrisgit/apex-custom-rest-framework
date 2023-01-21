@@ -2,10 +2,6 @@
 
 @SuppressWarnings('PMD.FieldNamingConventions, PMD.MethodNamingConventions')
 public inherited sharing class RestResponseWrapper {
-    public String matchedUri {get; set;}
-
-    // Perhaps make each one of these a class?
-    // Therefore return new HttpResponse.NoContent() ... returns HttpResponseWrapper
     public RestResponseWrapper NoContent() {
         return StatusCode(204);
     }

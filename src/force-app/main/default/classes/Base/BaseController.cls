@@ -1,15 +1,8 @@
 public abstract inherited sharing class BaseController {
-    public String controllerUri;
-    public String controllerDomain;
-
     @SuppressWarnings('PMD.FieldNamingConventions')
     public RestRequestWrapper Request;
     @SuppressWarnings('PMD.FieldNamingConventions')
     public RestResponseWrapper Response;
-
-    public BaseController(String controllerUri) {
-        this.controllerUri = controllerUri;
-    }
 
     public BaseController configure(RestRequestWrapper request, RestResponseWrapper response) {
         this.Request = request;
@@ -19,8 +12,6 @@ public abstract inherited sharing class BaseController {
     }
 
     public RestResponseWrapper execute() {
-        Response.matchedUri = controllerDomain + controllerUri;
-
         if (validatePermissions() == false) {
             return Response.Forbidden();
         }
@@ -66,11 +57,6 @@ public abstract inherited sharing class BaseController {
         return Response.InternalServerError();
     }
 
-    public BaseController setControllerDomain(String domain) {
-        this.controllerDomain = domain;
-        return this;
-    }
-
     // The template methods
     protected virtual List<String> getAllowedMethods() {
         return new List<String>{'GET'};
@@ -94,10 +80,6 @@ public abstract inherited sharing class BaseController {
 
     protected virtual RestResponseWrapper handlePatch() {
         return Response.MethodNotAllowed(getAllowedMethods());
-    }
-
-    public String getUriMapping() {
-        return controllerUri;
     }
 
     // Perhaps return an object or type that can be determined, i.e. if (HttpResponse then return Response etc)

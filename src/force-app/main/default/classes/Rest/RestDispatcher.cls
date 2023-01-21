@@ -2,28 +2,44 @@ public inherited sharing class RestDispatcher {
     private static final string PATH_SEPARATOR = '/';
     private static final string PARAMETER_DELIMETERS = '{}';
 
-    List<BaseController> registeredControllers = new List<BaseController>();
+    Map<String, System.Type> routeControllers = new Map<String, System.Type>();
 
-    public RestDispatcher register(BaseController controller) {
-        System.debug(LoggingLevel.DEBUG, string.format('RestDispatcher: register controller [{0}] as [{1}]', new object[] { controller.getUriMapping(), controller }));
-        registeredControllers.add(controller);
+    public RestDispatcher register(String route, System.Type clazz) {
+        System.debug(LoggingLevel.DEBUG, string.format('RestDispatcher: register route [{0}] against controller [{1}]', new object[] { route, clazz }));
+        routeControllers.put(route, clazz);
         return this;
     }
 
     public RestResponseWrapper execute(RestRequestWrapper request, RestResponseWrapper response) {
         System.debug(LoggingLevel.DEBUG, string.format('Attempting to dispatch [{0}] [{1}]', new Object[] { request.RequestType, request.requestURI}));
-        for (BaseController controller : registeredControllers) {
-            System.debug(LoggingLevel.DEBUG, string.format('Checking controller [{0}]', new Object[] { controller }));
-            if (matchRoute(request, controller.getUriMapping())) {
-                System.debug(LoggingLevel.DEBUG, string.format('Matched request against controller [{0}]', new Object[] { controller }));
+        for (String route : routeControllers.keySet()) {
+            System.debug(LoggingLevel.DEBUG, string.format('Attempting to match route with registered route [{0}]', new String[] { route }));
+            if (matchRoute(request, route)) {
+                System.Type controllerType = routeControllers.get(route);
+                System.debug(LoggingLevel.DEBUG, string.format('Matched route with controller [{0}]', new Object[] { controllerType }));
 
-                return controller
-                    .configure(request, response)
-                    .execute();
+                String controllerProperties = createControllerProperties(request, response);
+                Object controller = JSON.deserialize(controllerProperties, controllerType);
+                if (controller instanceOf BaseController) {
+                    return ((BaseController)controller).execute();
+                }
+
+                String controllerConfigurationMessage = string.format('Controllers should be inherited from BaseController [{0}]', new Object[] { controllerType });
+                response.CustomRestException(ControllerConfigurationException.raise(controllerConfigurationMessage));
             }
         }
         System.debug(LoggingLevel.DEBUG, 'No matching controller found for the request path, returning 404');
         return response.NotFound();
+    }
+
+    private String createControllerProperties(RestRequestWrapper request, RestResponseWrapper response) {
+        Map<String, Object> controllerProperties = new Map<String, Object>();
+        for (String key : request.pathParameters.keySet()) {
+            controllerProperties.put(key, request.pathParameters.get(key));
+        }
+        controllerProperties.put('Request', request);
+        controllerProperties.put('Response', response);
+        return JSON.serialize(controllerProperties);
     }
 
     private Boolean matchRoute(RestRequestWrapper request, String controllerRoute) {
