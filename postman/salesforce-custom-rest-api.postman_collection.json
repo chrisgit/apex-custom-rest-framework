@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "1eb81e84-2c72-4b6c-8422-867b193c9a3f",
+		"name": "salesforce-custom-rest-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23537144"
+	},
+	"item": [
+		{
+			"name": "Create Account and Contacts",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"console.log(pm.response.status);\r",
+							"\r",
+							"if (pm.response.status === 'OK') {\r",
+							"    let responseData = pm.response.json();\r",
+							"    let account = responseData[0];\r",
+							"    console.log(`Saving id [${account.id}] in collection variable accountid`);\r",
+							"    pm.collectionVariables.set(\"accountid\", account.id);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\": \"1000\",\r\n    \"accountName\": \"Acme Sales\",\r\n    \"industry\": \"Technology\",\r\n    \"contacts\": [\r\n        {\r\n            \"forename\": \"Adam\",\r\n            \"surname\": \"Edmonds\",\r\n            \"mobileNumber\": \"+44 75805783095\",\r\n            \"homeNumber\": \"+44 1252765234\",\r\n            \"email\": \"aedmonds@acme.com\"\r\n        },\r\n        {\r\n            \"forename\": \"Barry\",\r\n            \"surname\": \"Davies\",\r\n            \"mobileNumber\": \"+44 75805678095\",\r\n            \"homeNumber\": \"+44 1252765654\",\r\n            \"email\": \"bdavies@acme.com\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{instance_url}}/services/apexrest/accounts",
+					"host": [
+						"{{instance_url}}"
+					],
+					"path": [
+						"services",
+						"apexrest",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Account By Account Id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"accountNumber\": \"1000\",\r\n    \"accountName\": \"Acme Marketing\",\r\n    \"industry\": \"Technology\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{instance_url}}/services/apexrest/accounts/{{accountid}}",
+					"host": [
+						"{{instance_url}}"
+					],
+					"path": [
+						"services",
+						"apexrest",
+						"accounts",
+						"{{accountid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Accounts and Contacts",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{instance_url}}/services/apexrest/accounts",
+					"host": [
+						"{{instance_url}}"
+					],
+					"path": [
+						"services",
+						"apexrest",
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Account and Contacts By Account Id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{instance_url}}/services/apexrest/accounts/{{accountid}}",
+					"host": [
+						"{{instance_url}}"
+					],
+					"path": [
+						"services",
+						"apexrest",
+						"accounts",
+						"{{accountid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Account and Contacts By Account Id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{instance_url}}/services/apexrest/accounts/{{accountid}}",
+					"host": [
+						"{{instance_url}}"
+					],
+					"path": [
+						"services",
+						"apexrest",
+						"accounts",
+						"{{accountid}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "accountid",
+			"value": ""
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "instance_url",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
