@@ -68,7 +68,7 @@ Additionally Salesforce can do a lot of hard work for you in binding/unbinding t
 ```
 
 Call with a payload similar to the one below
-```
+```Json
 {
     "app": {
         "ApplicantId": 8899,
@@ -122,9 +122,33 @@ There is also an example postman collection.
 
 ## Adding new Controllers
 
-Create a controller inheriting from the BaseController class, override the http verb methods; if you do not override a method then a http status code 405 Method Not Allowed is returned.
+Create a controller inheriting from the BaseController class, override the http verb methods; if you do not override a method then a http status code 405 Method Not Allowed is returned if the caller tries to use the verb.
 
-Finally, register your controller with the dispatcher in the default rest endpoint.
+```
+// A simple http GET only controller
+public with sharing class SomeController extends BaseController {
+    protected override RestResponseWrapper handleGet() {
+        return Response.Ok(QueryClass.getObjects());
+    }
+}
+```
+
+Next, add the dispatcher to the rest endpoint and use the dispatchers register method to add your route along with a controller
+
+```
+@RestResource(UrlMapping = '/someapi/*')
+global inherited sharing class SomeRestEndpoint {
+    private static RestDispatcher dispatcher = new RestDispatcher();
+
+    static
+    {
+        dispatcher.register('/pathFromRoot', SomeController.class);
+    }
+```
+
+Create http verb methods on the endpoint class and redirect them to use the dispatcher.
+
+The RestResource(UrlMapping) can be anything; in the demo it is a catch all. If your path has parameters you can add them in curly brackets, i.e. `/pathFromRoot/{someId}`. If you add a property to your controller that matches the name of a parameter in the path it will automatically be available for use in your controller.
 
 Note:
 This code was part of my Apex Playground repository but broken out into its own repository to make it easier to follow and maintain.
