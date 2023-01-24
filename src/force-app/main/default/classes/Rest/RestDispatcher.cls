@@ -17,15 +17,15 @@ public inherited sharing class RestDispatcher {
             if (matchRoute(request, route)) {
                 System.Type controllerType = routeControllers.get(route);
                 System.debug(LoggingLevel.DEBUG, string.format('Matched route with controller [{0}]', new Object[] { controllerType }));
-
-                String controllerProperties = createControllerProperties(request, response);
-                Object controller = JSON.deserialize(controllerProperties, controllerType);
-                if (controller instanceOf BaseController) {
-                    return ((BaseController)controller).execute();
+                
+                if (BaseController.class.isAssignableFrom(controllerType) == true) {
+                    String controllerProperties = createControllerProperties(request, response);
+                    Object controller = JSON.deserialize(controllerProperties, controllerType);
+                    return ((BaseController)controller).execute();    
                 }
 
                 String controllerConfigurationMessage = string.format('Controllers should be inherited from BaseController [{0}]', new Object[] { controllerType });
-                response.CustomRestException(ControllerConfigurationException.raise(controllerConfigurationMessage));
+                return response.CustomRestException(ControllerConfigurationException.raise(controllerConfigurationMessage));
             }
         }
         System.debug(LoggingLevel.DEBUG, 'No matching controller found for the request path, returning 404');
